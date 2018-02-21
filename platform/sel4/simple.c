@@ -123,7 +123,8 @@ int custom_simple_vspace_bootstrap_frames(custom_simple_t *custom_simple, vspace
 
     }
     init_data_t *init_data = custom_simple->simple->data;
-    void *existing_frames[init_data->stack_pages + RR_NUMIO + 4];
+    int num_extra_frames = BIT(seL4_LargePageBits) / PAGE_SIZE_4K;
+    void *existing_frames[init_data->stack_pages + 4 + num_extra_frames + 1 + RR_NUMIO];
     existing_frames[0] = (void *) init_data;
     existing_frames[1] = ((char *) init_data) + PAGE_SIZE_4K;
     existing_frames[2] = seL4_GetIPCBuffer();
@@ -135,6 +136,13 @@ int custom_simple_vspace_bootstrap_frames(custom_simple_t *custom_simple, vspace
     int frames_index = 3 + RR_NUMIO;
     for (int i = 0; i < init_data->stack_pages; i++, frames_index++) {
         existing_frames[frames_index] = init_data->stack + (i * PAGE_SIZE_4K);
+    }
+
+    existing_frames[frames_index] = init_data->remote_stage_vaddr;
+    frames_index++;
+    for (int i = 0; i < num_extra_frames; i++, frames_index++) {
+//        printf("Reserved %p\n", init_data->remote_results_vaddr + (i * PAGE_SIZE_4K));
+        existing_frames[frames_index] = init_data->remote_results_vaddr + (i * PAGE_SIZE_4K);
     }
     existing_frames[frames_index] = NULL;
     return sel4utils_bootstrap_vspace(vspace, alloc_data, simple_get_pd(custom_simple->simple), vka,

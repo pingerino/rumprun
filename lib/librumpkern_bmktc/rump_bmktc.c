@@ -32,8 +32,8 @@
 
 #include "bmktc_user.h"
 
-MODULE(MODULE_CLASS_MISC, bmktc, NULL);
-
+//MODULE(MODULE_CLASS_MISC, bmktc, NULL);
+#if 0
 static u_int
 bmktc_get(struct timecounter *tc)
 {
@@ -69,3 +69,4 @@ bmktc_modcmd(modcmd_t cmd, void *arg)
 
 	return 0;
 }
+#endif

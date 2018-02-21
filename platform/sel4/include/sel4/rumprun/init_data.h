@@ -96,6 +96,8 @@ typedef struct {
     seL4_Word tsc_freq;
     /* address of the stack */
     void *stack;
+    void *remote_stage_vaddr;
+    void *remote_results_vaddr;
 } init_data_t;
 
 
